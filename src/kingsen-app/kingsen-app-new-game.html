@@ -1,0 +1,109 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+
+<dom-module id="kingsen-app-new-game">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      paper-card {
+        vertical-align: -webkit-baseline-middle;
+        min-height: 250px;
+        margin-right: 10px;
+      }
+      .input-card{
+        width:68%
+      }
+      .players-card{
+        width: 28%
+      }
+      .removePlayer{
+        display: block;
+      }
+      .removePlayer:hover{
+        background-color: #ff7a7a;
+      }
+
+    </style>
+
+    <paper-card class="input-card">
+      <div class="card-content">
+        Add the name of the player in this field and press enter or the button add player.
+        <paper-input on-keydown="_checkForEnter" value="{{newPlayerName}}" label="playername"></paper-input>
+      </div>
+      <paper-button on-click="_addPlayer">add player</paper-button>
+      <a style="color:black;" href="/game"><paper-button>start game</paper-button></a>
+    </paper-card>
+
+    <paper-card class="players-card">
+      <div class="card-content">
+        <template is="dom-repeat" items="[[players]]">
+          <paper-button class="removePlayer" player-name="[[item.name]]" on-click="_removePlayer">[[item.name]]</paper-button>
+        </template>
+      </div>
+    </paper-card>
+
+  </template>
+
+  <script>class KingsenAppNewGame extends Polymer.Element {
+  static get is() {
+    return 'kingsen-app-new-game';
+  }
+
+  static get properties() {
+    return {
+      newPlayerName: {
+        type: String
+      },
+      players: {
+        type: Array,
+        value: [],
+        notify: true
+      }
+    };
+  }
+
+  _addPlayer() {
+    if (this.newPlayerName == "") {
+      return false;
+    }
+
+    this.push('players', this._player(this.newPlayerName));
+    this.newPlayerName = "";
+  }
+
+  _removePlayer(event) {
+    var counter = 0;
+
+    while (counter < this.players.length) {
+      var item = this.players[counter];
+
+      if (item.name === event.target.playerName) {
+        this.splice('players', counter, 1);
+      } else {
+        counter++;
+      }
+    }
+  }
+
+  _player(name) {
+    return {
+      name: name,
+      activeTurn: false,
+      mods: []
+    };
+  }
+
+  _checkForEnter(event) {
+    if (event.keyCode === 13) {
+      this._addPlayer();
+    }
+  }
+
+}
+
+window.customElements.define(KingsenAppNewGame.is, KingsenAppNewGame);</script>
+</dom-module>

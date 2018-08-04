@@ -1,0 +1,88 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/app-route/app-location.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/app-layout/app-layout.html">
+
+<link rel="import" href="kingsen-app-new-game.html">
+<link rel="import" href="kingsen-app-game.html">
+<link rel="import" href="kingsen-app-home.html">
+
+<dom-module id="kingsen-app">
+  <template>
+    <style>
+      :host {
+        font-family: Roboto, Noto, sans-serif;
+        display: block;
+      }
+      app-toolbar {
+        background-color: var(--paper-blue-500);
+        color: white;
+        margin-bottom: 20px;
+      }
+      iron-pages{
+        margin: 0px 20px;
+      }
+      .brand{
+        color: white;
+        text-decoration: none;
+      }
+      .right{
+        position: absolute;
+        right: 0px;
+        margin-right: 10px;
+      }
+    </style>
+    <app-location route="{{route}}"></app-location>
+    <app-route route="{{route}}" pattern="/:view" data="{{routeData}}" tail="{{subroute}}">
+    </app-route>
+
+    <iron-ajax auto="" url="data/cardlist.json" handle-as="json" on-response="_handleResponse">
+    </iron-ajax>
+
+    <app-header>
+      <app-toolbar sticky="">
+        <a style="color:white;" href="/"><paper-button>Kingsen</paper-button></a>
+        <a class="right" style="color:white;" href="/new"><paper-button>New game</paper-button></a>
+      </app-toolbar>
+    </app-header>
+
+    <iron-pages selected="[[routeData.view]]" attr-for-selected="route" default="new">
+      <kingsen-app-home route=""></kingsen-app-home>
+      <kingsen-app-new-game route="new" players="{{players}}"></kingsen-app-new-game>
+      <kingsen-app-game route="game" card-list="{{cardList}}" players="{{players}}"></kingsen-app-game>
+    </iron-pages>
+
+  </template>
+
+  <script>/**
+ * @customElement
+ * @polymer
+ */
+class KingsenApp extends Polymer.Element {
+  static get is() {
+    return 'kingsen-app';
+  }
+
+  static get properties() {
+    return {
+      cardList: {
+        type: Array
+      },
+      players: {
+        type: Array,
+        value: [],
+        notify: true
+      }
+    };
+  }
+
+  _handleResponse(event) {
+    this.cardList = event.detail.response.cards;
+  }
+
+}
+
+window.customElements.define(KingsenApp.is, KingsenApp);</script>
+</dom-module>

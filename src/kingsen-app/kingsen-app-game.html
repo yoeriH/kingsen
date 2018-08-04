@@ -1,0 +1,260 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/app-route/app-location.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+
+
+<dom-module id="kingsen-app-game">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      paper-card{
+        width: inherit;
+        margin-bottom: 20px;
+      }
+      th{
+        text-align: left;
+      }
+      .right-bar{
+        position: absolute;
+        right: 0px;
+        width: 400px;
+        padding: 5px;
+      }
+      .legend-top{
+        width: inherit;
+        text-align: center;
+      }
+      .player-name{
+        display: inline;
+      }
+      .blue-button{
+        background-color: var(--paper-blue-500);
+        color: white;
+      }
+    </style>
+    <div class="right-bar">
+      <paper-card heading="Players">
+        <div class="card-content">
+          <table>
+            <tbody><tr>
+              <th>
+                Status
+              </th>
+              <th>
+                Name
+              </th>
+              <th>
+                Turn
+              </th>
+            </tr>
+            <template is="dom-repeat" items="{{players}}">
+              <tr>
+                <td>
+                  <template is="dom-repeat" items="{{item.mods}}">
+                    <span class="player-name">{{item}}</span>
+                  </template>
+                </td>
+                <td>
+                  <span class="player-name">{{item.name}}</span>
+                </td>
+                <td>
+                  <span class="active-turn" hidden$="{{!item.activeTurn}}">*</span>
+                </td>
+              </tr>
+              
+            </template>
+          </tbody></table>
+        </div>
+      </paper-card>
+      <paper-card heading="Stats">
+        <div class="card-content">
+          <div>
+            Assignment:[[activeCard.instructions]]
+          </div>
+          <div>
+            Cards played:[[currentCardId]]
+          </div>
+          <div>
+            Kings played:[[kingsPlayed]]
+          </div>
+        </div>
+      </paper-card>
+      <iframe width="400px" height="300px;" src="https://www.youtube.com/embed/rEa6OI9MbYo"></iframe>
+    </div>
+
+    <iron-image style="width:500px; height:500px;" sizing="contain" src="data/svg/[[activeCard.image]]"></iron-image>
+    <paper-button class="blue-button" on-click="_nextTurn">[[buttonText]]</paper-button>
+  </template>
+  <script>/**
+ * @customElement
+ * @polymer
+ */
+class KingsenAppGame extends Polymer.Element {
+  static get is() {
+    return 'kingsen-app-game';
+  }
+
+  static get properties() {
+    return {
+      cardList: {
+        type: Array
+      },
+      players: {
+        type: Array,
+        value: [],
+        notify: true
+      },
+      buddies: {
+        type: Array
+      },
+      rules: {
+        type: Array
+      },
+      activeCard: {
+        type: Object,
+        value: {}
+      },
+      currentCardId: {
+        type: Number,
+        value: 0
+      },
+      buttonText: {
+        type: String,
+        value: "Start the game"
+      },
+      kingsPlayed: {
+        type: Number,
+        value: 0
+      },
+      gameEnded: {
+        type: Boolean,
+        value: false
+      },
+      activePlayer: {
+        type: Number,
+        value: undefined
+      }
+    };
+  }
+
+  _nextTurn() {
+    if (this.gameEnded) {
+      this.cardList = this._shuffle(this.cardList);
+      this.buttonText = "Next Card";
+      this.kingsPlayed = 0;
+      this.currentCardId = 0;
+      this.activePlayer = undefined;
+
+      for (var i = 0; i < this.players.length; i++) {
+        this.players[i].activeTurn = false;
+        this.set('players.' + i + '.mods', []);
+        this.notifyPath('players.' + i + '.activeTurn');
+      }
+
+      this.gameEnded = false;
+    }
+
+    this._activateNextPlayer();
+
+    this._drawNewCard();
+  }
+
+  _activateNextPlayer() {
+    if (this.activePlayer || this.activePlayer == 0) {
+      this.players[this.activePlayer].activeTurn = false;
+      this.notifyPath('players.' + this.activePlayer + '.activeTurn');
+      this.activePlayer++;
+
+      if (!this.players[this.activePlayer]) {
+        this.activePlayer = 0;
+      }
+
+      this.players[this.activePlayer].activeTurn = true;
+    } else {
+      this.cardList = this._shuffle(this.cardList);
+      this.buttonText = "Next Card";
+      this.players[0].activeTurn = true;
+      this.notifyPath('players.0.activeTurn');
+      this.activePlayer = 0;
+    }
+
+    this.notifyPath('players.' + this.activePlayer + '.activeTurn');
+  }
+
+  _shuffle(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+
+    return array;
+  }
+
+  _endGame() {
+    this.activeCard.instructions = "That was the last king, Now it is your turn to drink it all!";
+    this.notifyPath("activeCard.instructions");
+    this.gameEnded = true;
+    this.buttonText = "Restart";
+  }
+
+  _drawNewCard() {
+    var modifier = false;
+    this.activeCard = this.cardList[this.currentCardId];
+
+    if (this.activeCard.name == "queen") {
+      modifier = "QE";
+    }
+
+    if (this.activeCard.name == "10") {
+      modifier = "QM";
+
+      this._removeMod(modifier);
+    }
+
+    if (this.activeCard.name == "ace") {
+      modifier = "SE";
+
+      this._removeMod(modifier);
+    }
+
+    if (this.activeCard.name == "king") {
+      this.kingsPlayed++;
+    }
+
+    if (this.kingsPlayed == 4) {
+      this._endGame();
+    }
+
+    this._applyMod(modifier);
+
+    this.currentCardId++;
+  }
+
+  _applyMod(modifier) {
+    if (modifier) {
+      this.push('players.' + this.activePlayer + '.mods', modifier);
+    }
+  }
+
+  _removeMod(modifier) {
+    for (var player in this.players) {
+      var index = this.players[player].mods.indexOf(modifier);
+
+      if (index != -1) {
+        this.splice('players.' + player + '.mods', index, 1);
+      }
+    }
+  }
+
+}
+
+window.customElements.define(KingsenAppGame.is, KingsenAppGame);</script>
+</dom-module>
