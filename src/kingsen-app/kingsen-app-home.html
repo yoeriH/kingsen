@@ -3,6 +3,7 @@
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/polymer-bootstrap-grid/bootstrap-grid.html">
 
 <dom-module id="kingsen-app-home">
   <template>
@@ -10,18 +11,21 @@
       :host {
         display: block;
       }
-      paper-card{
-        width: 100%
-      }
     </style>
-    <paper-card heading="Kingsen">
-      <div class="card-content">
-        Kinges is a multiplayer cardgame which involves social drinking and a multitude of different mini games. The game ends when all 4 kings have been drawn from the game.
-      </div>
-       <div class="card-actions">
-         <a style="color:black;" href="/new"><paper-button>Try it now</paper-button></a>
-       </div>
-    </paper-card>
+    <bootstrap-grid>
+      <bootstrap-row>
+        <div class="col-xs-12 ">
+          <paper-card heading="Kingsen">
+            <div class="card-content">
+              Kinges is a multiplayer cardgame which involves social drinking and a multitude of different mini games. The game ends when all 4 kings have been drawn from the game.
+            </div>
+           <div class="card-actions">
+             <a style="color:black;" href="/new"><paper-button>Try it now</paper-button></a>
+           </div>
+          </paper-card>
+        </div>
+      </bootstrap-row>
+    </bootstrap-grid>
   </template>
 
   <script>class KingsenAppHome extends Polymer.Element {

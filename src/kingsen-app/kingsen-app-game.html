@@ -7,6 +7,7 @@
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../bower_components/iron-image/iron-image.html">
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/polymer-bootstrap-grid/bootstrap-grid.html">
 
 
 <dom-module id="kingsen-app-game">
@@ -15,22 +16,8 @@
       :host {
         display: block;
       }
-      paper-card{
-        width: inherit;
-        margin-bottom: 20px;
-      }
       th{
         text-align: left;
-      }
-      .right-bar{
-        position: absolute;
-        right: 0px;
-        width: 400px;
-        padding: 5px;
-      }
-      .legend-top{
-        width: inherit;
-        text-align: center;
       }
       .player-name{
         display: inline;
@@ -38,60 +25,71 @@
       .blue-button{
         background-color: var(--paper-blue-500);
         color: white;
+        width: 100%
+      }
+      paper-card{
+        width: 100%;
+        margin-top: 10px;
+        margin-bottom: 10px;
       }
     </style>
-    <div class="right-bar">
-      <paper-card heading="Players">
-        <div class="card-content">
-          <table>
-            <tbody><tr>
-              <th>
-                Status
-              </th>
-              <th>
-                Name
-              </th>
-              <th>
-                Turn
-              </th>
-            </tr>
-            <template is="dom-repeat" items="{{players}}">
-              <tr>
-                <td>
-                  <template is="dom-repeat" items="{{item.mods}}">
-                    <span class="player-name">{{item}}</span>
-                  </template>
-                </td>
-                <td>
-                  <span class="player-name">{{item.name}}</span>
-                </td>
-                <td>
-                  <span class="active-turn" hidden$="{{!item.activeTurn}}">*</span>
-                </td>
+    <bootstrap-grid>
+      <bootstrap-row>
+        <div class="col-xs-12 col-sm-8">
+          <iron-image style="width:75%; height:50vh;" sizing="contain" src="data/svg/[[activeCard.image]]"></iron-image>
+          <paper-button class="blue-button" on-click="_nextTurn">[[buttonText]]</paper-button>
+        </div>
+      <div class="col-xs-12 col-sm-4">
+        <paper-card heading="Players">
+          <div class="card-content">
+            <table>
+              <tbody><tr>
+                <th>
+                  Status
+                </th>
+                <th>
+                  Name
+                </th>
+                <th>
+                  Turn
+                </th>
               </tr>
-              
-            </template>
-          </tbody></table>
+              <template is="dom-repeat" items="{{players}}">
+                <tr>
+                  <td>
+                    <template is="dom-repeat" items="{{item.mods}}">
+                      <span class="player-name">{{item}}</span>
+                    </template>
+                  </td>
+                  <td>
+                    <span class="player-name">{{item.name}}</span>
+                  </td>
+                  <td>
+                    <span class="active-turn" hidden$="{{!item.activeTurn}}">*</span>
+                  </td>
+                </tr>
+              </template>
+            </tbody></table>
+          </div>
+        </paper-card>
+        <paper-card heading="Stats">
+          <div class="card-content">
+            <div>
+              Assignment:[[activeCard.instructions]]
+            </div>
+            <div>
+              Cards played:[[currentCardId]]
+            </div>
+            <div>
+              Kings played:[[kingsPlayed]]
+            </div>
+          </div>
+        </paper-card>
+        <iframe width="100%" height="200px;" src="https://www.youtube.com/embed/rEa6OI9MbYo"></iframe>
         </div>
-      </paper-card>
-      <paper-card heading="Stats">
-        <div class="card-content">
-          <div>
-            Assignment:[[activeCard.instructions]]
-          </div>
-          <div>
-            Cards played:[[currentCardId]]
-          </div>
-          <div>
-            Kings played:[[kingsPlayed]]
-          </div>
-        </div>
-      </paper-card>
-      <iframe width="400px" height="300px;" src="https://www.youtube.com/embed/rEa6OI9MbYo"></iframe>
-    </div>
+      </bootstrap-row>
+    </bootstrap-grid>
 
-    <iron-image style="width:500px; height:500px;" sizing="contain" src="data/svg/[[activeCard.image]]"></iron-image>
-    <paper-button class="blue-button" on-click="_nextTurn">[[buttonText]]</paper-button>
   </template>
   <script>/**
  * @customElement

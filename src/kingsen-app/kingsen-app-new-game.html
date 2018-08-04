@@ -2,6 +2,8 @@
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/polymer-bootstrap-grid/bootstrap-grid.html">
+
 
 <dom-module id="kingsen-app-new-game">
   <template>
@@ -9,43 +11,43 @@
       :host {
         display: block;
       }
-      paper-card {
-        vertical-align: -webkit-baseline-middle;
-        min-height: 250px;
-        margin-right: 10px;
-      }
-      .input-card{
-        width:68%
-      }
-      .players-card{
-        width: 28%
-      }
       .removePlayer{
         display: block;
       }
       .removePlayer:hover{
         background-color: #ff7a7a;
       }
-
+      paper-card{
+        margin-top: 10px;
+      }
+      .players-card{
+        width: 100%;
+      }
     </style>
 
-    <paper-card class="input-card">
-      <div class="card-content">
-        Add the name of the player in this field and press enter or the button add player.
-        <paper-input on-keydown="_checkForEnter" value="{{newPlayerName}}" label="playername"></paper-input>
-      </div>
-      <paper-button on-click="_addPlayer">add player</paper-button>
-      <a style="color:black;" href="/game"><paper-button>start game</paper-button></a>
-    </paper-card>
-
-    <paper-card class="players-card">
-      <div class="card-content">
-        <template is="dom-repeat" items="[[players]]">
-          <paper-button class="removePlayer" player-name="[[item.name]]" on-click="_removePlayer">[[item.name]]</paper-button>
-        </template>
-      </div>
-    </paper-card>
-
+    <bootstrap-grid>
+      <bootstrap-row>
+        <div class="col-xs-12 col-sm-6">
+          <paper-card class="input-card" heading="Players">
+            <div class="card-content">
+              Add the name of the player in this field and press enter or the button add player.
+              <paper-input on-keydown="_checkForEnter" value="{{newPlayerName}}" label="playername"></paper-input>
+            </div>
+            <paper-button on-click="_addPlayer">add player</paper-button>
+            <a style="color:black;" href="/game"><paper-button>start game</paper-button></a>
+          </paper-card>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+          <paper-card class="players-card" heading="Ready To Go">
+            <div class="card-content">
+              <template is="dom-repeat" items="[[players]]">
+                <paper-button class="removePlayer" player-name="[[item.name]]" on-click="_removePlayer">[[item.name]]</paper-button>
+              </template>
+            </div>
+          </paper-card>
+        </div>
+      </bootstrap-row>
+    </bootstrap-grid>
   </template>
 
   <script>class KingsenAppNewGame extends Polymer.Element {
